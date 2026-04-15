@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class Monster : MonoBehaviour
@@ -28,10 +29,27 @@ public class Monster : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        GameObject explosionObj = Instantiate(prefabsExplosion);
-        explosionObj.transform.position = transform.position;
-        Destroy(collision.gameObject);
+        if (collision.gameObject.tag == "Bullet")
+        {
+            GameObject gameManager = GameObject.Find("GameManager");
+            ScoreManager scoreManager = gameManager.GetComponent<ScoreManager>();
+            AudioSource audioManager = gameManager.GetComponent<AudioSource>();
 
-        Destroy(gameObject);
+            scoreManager.nowScore++;
+            scoreManager.nowScoreUI.text ="Score : " + scoreManager.nowScore;
+
+            if(scoreManager.nowScore > scoreManager.bestScore)
+            {
+                scoreManager.bestScore = scoreManager.nowScore;
+                scoreManager.bestScoreUI.text = "Best Score : " + scoreManager.bestScore;
+                PlayerPrefs.SetInt("bestScore", scoreManager.bestScore);
+            }
+
+            GameObject explosionObj = Instantiate(prefabsExplosion);
+            explosionObj.transform.position = transform.position;
+            
+            Destroy(collision.gameObject);
+            Destroy(gameObject);
+        }
     }
 }
