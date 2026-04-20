@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Monster : MonoBehaviour
 {
     public float speed = 1.0f;
     Vector3 direct = Vector3.down;
+    public GameObject player;
 
     public GameObject prefabsExplosion;
     // Start is called before the first frame update
@@ -45,11 +47,19 @@ public class Monster : MonoBehaviour
                 PlayerPrefs.SetInt("bestScore", scoreManager.bestScore);
             }
 
-            GameObject explosionObj = Instantiate(prefabsExplosion);
-            explosionObj.transform.position = transform.position;
+            if (prefabsExplosion != null)
+            {
+                GameObject explosionObj = Instantiate(prefabsExplosion);
+                explosionObj.transform.position = transform.position;
+            }
+            else
+            {
+                IndustrialDroneExplosionVFX.Spawn(transform.position);
+            }
             
             Destroy(collision.gameObject);
             Destroy(gameObject);
+
         }
     }
 }
